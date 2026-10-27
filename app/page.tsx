@@ -1,8 +1,8 @@
 "use client";
 import { useMemo, useState } from "react";
-import { SYMPTOMS, TOX, STATES, GRADES, TREAT, UPDATES, AGENTS, HELP } from "@/lib/data";
+import { SYMPTOMS, TOX, STATES, GRADES, TREAT, UPDATES, AGENTS, HELP, TABLE1 } from "@/lib/data";
 
-const TABS = ["Assess", "Pathophysiology", "Treatment", "Search", "Updates"];
+const TABS = ["Assess", "Toxidromes", "Pathophysiology", "Treatment", "Search", "Updates"];
 const card = "bg-white rounded-xl border border-slate-200 p-3 mb-3";
 
 export default function Home() {
@@ -72,6 +72,23 @@ export default function Home() {
           </div>
         ))}
         <p className="text-xs text-slate-500 mt-2">{HELP}</p>
+      </>)}
+
+      {tab === "Toxidromes" && (<>
+        <p className="text-sm mb-2">Table 459-1: poisoning differential by physiologic state, with example drugs for each class.</p>
+        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Filter by drug or class…" className="w-full border rounded-lg p-2 mb-3 text-sm" />
+        {TABLE1.map(st => (
+          <details key={st.state} open className={card}>
+            <summary className="font-semibold cursor-pointer">{st.state}</summary>
+            {st.groups.map(g => {
+              const items = g.items.filter(i => (g.g + i.join(" ")).toLowerCase().includes(q.toLowerCase()));
+              if (!items.length) return null;
+              return (<div key={g.g} className="mt-2">
+                <p className="text-sm font-medium text-rose-800">{g.g}</p>
+                <ul className="ml-4 list-disc text-sm">{items.map(i => (<li key={i[0]}><b>{i[0]}:</b> <span className="text-slate-600">{i[1]}</span></li>))}</ul>
+              </div>);
+            })}
+          </details>))}
       </>)}
 
       {tab === "Pathophysiology" && (<>
